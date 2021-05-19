@@ -1,0 +1,52 @@
+---
+title: "Merge coverage data"
+author: "Peter Desmet"
+date: "`Sys.Date()`"
+output: html_document
+---
+
+This document will unzip the coverage reports and create a single csv file with all coverage.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries:
+
+```{r}
+library(readr)
+library(here)
+```
+
+Unzip raw files to `data/interim`:
+
+```{r}
+zip_files <- list.files(
+  path = here::here("data", "raw"),
+  pattern = ".zip$",
+  full.names = TRUE,
+  recursive = TRUE
+)
+sapply(zip_files, unzip, exdir = here::here("data", "interim"))
+```
+
+Read all `coverage_x.csv` files:
+
+```{r}
+coverage_files <- list.files(
+  path = here::here("data", "interim"),
+  pattern = "^coverage\\w+.csv",
+  full.names = TRUE
+)
+coverage <- coverage_files %>%
+  lapply(read_csv, col_types = "cDiiiiiiiiiiiiii") %>%
+  bind_rows %>%
+  arrange(radar, date)
+```
+
+Write `coverage` data to file:
+
+```{r}
+write_csv(coverage, here::here("data", "processed", "coverage.csv"), na = "")
+```
+
