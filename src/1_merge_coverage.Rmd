@@ -37,7 +37,8 @@ Read all `coverage_x.csv` files:
 coverage_files <- list.files(
   path = here::here("data", "interim"),
   pattern = "^coverage\\w+.csv",
-  full.names = TRUE
+  full.names = TRUE,
+  recursive = TRUE
 )
 coverage <- coverage_files %>%
   lapply(read_csv, col_types = "cDiiiiiiiiiiiiii") %>%
