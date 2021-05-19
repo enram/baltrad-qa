@@ -1,0 +1,70 @@
+---
+title: "List bad data"
+author: "Peter Desmet"
+date: "`Sys.Date()`"
+output: html_document
+---
+
+This document will list the daily zips of pvol data that are unusable for processing.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries:
+
+```{r}
+library(dplyr)
+library(readr)
+library(here)
+```
+
+Read coverage:
+
+```{r}
+coverage <- read_csv(here::here("data", "processed", "coverage.csv"))
+```
+
+Add columns:
+
+```{r}
+coverage <-
+  coverage %>%
+  
+  # country
+  mutate(country = recode(str_sub(radar, 1, 2),
+    "be" = "belgium",
+    "cz" = "czechia",
+    "dk" = "denmark",
+    "ee" = "estonia",
+    "fi" = "finland",
+    "fr" = "france",
+    "de" = "germany",
+    "nl" = "netherlands",
+    "pl" = "poland",
+    "pt" = "portugal",
+    "sk" = "slovakia",
+    "si" = "slovenia",
+    "es" = "spain",
+    "se" = "sweden"
+  )) %>%
+  
+  # path
+  mutate(path = paste(
+   country,
+   format(date1, "%Y"),
+   paste0(format(date1, "%Y%m%d"), ".tgz"),
+   sep = "/"
+  )) %>%
+
+  # scan_and_pvol_count
+  mutate(scan_and_pvol_count = scan_count + pvol_count)
+```
+
+Filter on data where **all files** have no `VRADH` or no `DBZH`:
+
+```{r}
+coverage %>%
+  filter(scan_and_pvol_count == error_no_vradh | scan_and_pvol_count == error_no_dbzh) %>%
+  nrow()
+```
