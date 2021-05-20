@@ -52,8 +52,8 @@ coverage <-
   # path
   mutate(path = paste(
    country,
-   format(date1, "%Y"),
-   paste0(format(date1, "%Y%m%d"), ".tgz"),
+   format(date, "%Y"),
+   paste0(format(date, "%Y%m%d"), ".tgz"),
    sep = "/"
   )) %>%
 
@@ -61,10 +61,17 @@ coverage <-
   mutate(scan_and_pvol_count = scan_count + pvol_count)
 ```
 
-Filter on data where **all files** have no `VRADH` or no `DBZH`:
+Filter on data where **all files** have no `VRADH`:
 
 ```{r}
-coverage %>%
-  filter(scan_and_pvol_count == error_no_vradh | scan_and_pvol_count == error_no_dbzh) %>%
-  nrow()
+no_vradh <- 
+  coverage %>%
+  filter(scan_and_pvol_count == error_no_vradh) %>%
+  select(path)
+```
+
+Save to file:
+
+```{r}
+write_csv(no_vradh, here::here("data", "processed", "no_vradh.csv"), na = "")
 ```

@@ -51,4 +51,3 @@ Write `coverage` data to file:
 ```{r}
 write_csv(coverage, here::here("data", "processed", "coverage.csv"), na = "")
 ```
-
