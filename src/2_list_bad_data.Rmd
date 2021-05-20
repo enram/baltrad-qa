@@ -16,6 +16,7 @@ Load libraries:
 ```{r}
 library(dplyr)
 library(readr)
+library(stringr)
 library(here)
 ```
 
@@ -64,8 +65,14 @@ coverage <-
 Filter on data where **all files** have no `VRADH`:
 
 ```{r}
-no_vradh <- 
+no_vradh <-
   coverage %>%
+  group_by(path) %>%
+  summarize(
+    scan_and_pvol_count = sum(scan_and_pvol_count),
+    error_no_vradh = sum(error_no_vradh),
+    radar = paste(radar, collapse = "|")
+  ) %>%
   filter(scan_and_pvol_count == error_no_vradh) %>%
   select(path)
 ```
