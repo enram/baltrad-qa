@@ -73,8 +73,7 @@ no_vradh <-
     error_no_vradh = sum(error_no_vradh),
     radar = paste(radar, collapse = "|")
   ) %>%
-  filter(scan_and_pvol_count == error_no_vradh) %>%
-  select(path)
+  filter(scan_and_pvol_count == error_no_vradh)
 ```
 
 Save to file:
